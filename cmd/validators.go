@@ -74,6 +74,10 @@ func inferFromTo(src, dst string) common.FromTo {
 	}
 
 	switch {
+	case srcLocation == common.ELocation.Local() && dstLocation == common.ELocation.SSH():
+		return common.EFromTo.LocalSSH()
+	case srcLocation == common.ELocation.SSH() && dstLocation == common.ELocation.Local():
+		return common.EFromTo.SSHLocal()
 	case srcLocation == common.ELocation.Local() && dstLocation == common.ELocation.Blob():
 		return common.EFromTo.LocalBlob()
 	case srcLocation == common.ELocation.Blob() && dstLocation == common.ELocation.Local():
@@ -124,6 +128,10 @@ func inferArgumentLocation(arg string) common.Location {
 	if arg == pipeLocation {
 		return common.ELocation.Pipe()
 	}
+	if startsWith(arg, "ssh:") {
+		return common.ELocation.SSH()
+	}
+
 	if startsWith(arg, "http") {
 		// Let's try to parse the argument as a URL
 		u, err := url.Parse(arg)

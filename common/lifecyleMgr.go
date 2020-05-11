@@ -229,14 +229,18 @@ func (lcm *lifecycleMgr) Prompt(message string, details PromptDetails) ResponseO
 	// block until input comes from the user
 	rawResponse := <-expectedInputChannel
 
-	// match the given response against one of the options we gave
-	for _, option := range details.ResponseOptions {
-		// in case the user misunderstood and typed full response type instead, we still tolerate it
-		// e.g. instead of "y", user typed "Yes"
-		if strings.EqualFold(option.ResponseString, rawResponse) ||
-			strings.EqualFold(option.UserFriendlyResponseType, rawResponse) {
-			return option
+	if len(details.ResponseOptions) > 0 {
+		// match the given response against one of the options we gave
+		for _, option := range details.ResponseOptions {
+			// in case the user misunderstood and typed full response type instead, we still tolerate it
+			// e.g. instead of "y", user typed "Yes"
+			if strings.EqualFold(option.ResponseString, rawResponse) ||
+				strings.EqualFold(option.UserFriendlyResponseType, rawResponse) {
+				return option
+			}
 		}
+	} else {
+		return EResponseOption.ArbitraryText(rawResponse)
 	}
 
 	// nothing matched our options, assume default behavior (up to whoever that called Prompt)
@@ -410,9 +414,13 @@ func (lcm *lifecycleMgr) processTextOutput(msgToOutput outputMessage) {
 		}
 
 		// example output: Please confirm with: [Y] Yes  [N] No  [A] Yes for all  [L] No for all
-		fmt.Print(" Please confirm with:")
-		for _, option := range msgToOutput.promptDetails.ResponseOptions {
-			fmt.Printf(" [%s] %s ", strings.ToUpper(option.ResponseString), option.UserFriendlyResponseType)
+		if len(msgToOutput.promptDetails.ResponseOptions) > 0 {
+			fmt.Print(" Please confirm with:")
+			for _, option := range msgToOutput.promptDetails.ResponseOptions {
+				fmt.Printf(" [%s] %s ", strings.ToUpper(option.ResponseString), option.UserFriendlyResponseType)
+			}
+		} else {
+			fmt.Printf(" %s: ", strings.ToUpper(msgToOutput.promptDetails.ArbitraryChallengeText))
 		}
 
 		// read the response to the prompt and send it back through the channel

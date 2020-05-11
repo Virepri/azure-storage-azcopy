@@ -23,6 +23,7 @@ Copies source data to a destination location. The supported directions are:
   - local <-> Azure Blob (SAS or OAuth authentication)
   - local <-> Azure Files (Share/directory SAS authentication)
   - local <-> ADLS Gen 2 (SAS, OAuth, or SharedKey authentication)
+  - local <-> Linux-based SSH server (expects the commands find, dd, and stat to be available, accepts all auth aside from GSSAPI and HostKey based auth)	
   - Azure Blob (SAS or public) -> Azure Blob (SAS or OAuth authentication)
   - Azure Blob (SAS or public) -> Azure Files (SAS)
   - Azure Files (SAS) -> Azure Files (SAS)
@@ -45,7 +46,15 @@ On Windows, MIME types are extracted from the registry. This feature can be turn
 
 ` + environmentVariableNotice
 
-const copyCmdExample = `Upload a single file by using OAuth authentication. If you have not yet logged into AzCopy, please run the azcopy login command before you run the following command.
+const copyCmdExample = `Upload a single file to a Linux-based SSH server
+
+ - azcopy cp "/path/to/file.txt" "ssh:user@Hostname:/path/to/new/file.txt"
+
+Download a single file from a Linux-based SSH server
+
+- azcopy cp "ssh:user@Hostname:/path/to/file.txt" "/path/to/new/file.txt"
+
+Upload a single file by using OAuth authentication. If you have not yet logged into AzCopy, please run the azcopy login command before you run the following command.
 
   - azcopy cp "/path/to/file.txt" "https://[account].blob.core.windows.net/[container]/[path/to/blob]"
 

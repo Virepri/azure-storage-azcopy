@@ -14,9 +14,10 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jiacfan/keychain v0.0.0-20180920053336-f2c902a3d807
 	github.com/jiacfan/keyctl v0.3.1
+	github.com/kevinburke/ssh_config v0.0.0-20190725054713-01f96b0aa0cd
 	github.com/mattn/go-ieproxy v0.0.0-20190610004146-91bb50d98149
 	github.com/minio/minio-go v6.0.14+incompatible
-	github.com/mitchellh/go-homedir v1.1.0 // indirect
+	github.com/mitchellh/go-homedir v1.1.0
 	github.com/pkg/errors v0.8.1
 	github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a // indirect
 	github.com/spf13/cobra v0.0.3

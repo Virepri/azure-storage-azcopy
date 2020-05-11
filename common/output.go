@@ -52,6 +52,7 @@ type OutputBuilder func(OutputFormat) string
 type PromptDetails struct {
 	PromptType      PromptType
 	ResponseOptions []ResponseOption // used from prompt messages where we expect a response
+	ArbitraryChallengeText string
 	PromptTarget    string           // used when prompt message is targeting a specific resource, ease partner team integration
 }
 
@@ -62,6 +63,8 @@ type PromptType string
 func (PromptType) Cancel() PromptType            { return PromptType("Cancel") }
 func (PromptType) Overwrite() PromptType         { return PromptType("Overwrite") }
 func (PromptType) DeleteDestination() PromptType { return PromptType("DeleteDestination") }
+func (PromptType) SSHPassword() PromptType { return PromptType("SSHPassword") }
+func (PromptType) SSHChallengeResponse() PromptType { return PromptType("SSHChallengeResponse")}
 
 // -------------------------------------- JSON templates -------------------------------------- //
 // used to help formatting of JSON outputs

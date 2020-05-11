@@ -192,6 +192,9 @@ func (ResponseOption) YesForAll() ResponseOption {
 func (ResponseOption) NoForAll() ResponseOption {
 	return ResponseOption{ResponseType: "NoForAll", UserFriendlyResponseType: "No for all", ResponseString: "l"}
 }
+func (ResponseOption) ArbitraryText(data string) ResponseOption { // this should never be included in the list of available response options, because it's the response itself.
+	return ResponseOption{ResponseType: "ArbitraryText", ResponseString: data}
+}
 func (ResponseOption) Default() ResponseOption {
 	return ResponseOption{ResponseType: "", UserFriendlyResponseType: "", ResponseString: ""}
 }
@@ -407,6 +410,7 @@ func (Location) File() Location      { return Location(4) }
 func (Location) BlobFS() Location    { return Location(5) }
 func (Location) S3() Location        { return Location(6) }
 func (Location) Benchmark() Location { return Location(7) }
+func (Location) SSH() Location { return Location(8) }
 
 func (l Location) String() string {
 	return enum.StringInt(l, reflect.TypeOf(l))
@@ -421,7 +425,7 @@ func fromToValue(from Location, to Location) FromTo {
 
 func (l Location) IsRemote() bool {
 	switch l {
-	case ELocation.BlobFS(), ELocation.Blob(), ELocation.File(), ELocation.S3():
+	case ELocation.BlobFS(), ELocation.Blob(), ELocation.File(), ELocation.S3(), ELocation.SSH():
 		return true
 	case ELocation.Local(), ELocation.Benchmark(), ELocation.Pipe(), ELocation.Unknown():
 		return false
@@ -444,7 +448,8 @@ func (l Location) IsFolderAware() bool {
 	switch l {
 	case ELocation.BlobFS(), ELocation.File(), ELocation.Local():
 		return true
-	case ELocation.Blob(), ELocation.S3(), ELocation.Benchmark(), ELocation.Pipe(), ELocation.Unknown():
+		// TODO: Make SSH folder aware.
+	case ELocation.Blob(), ELocation.S3(), ELocation.Benchmark(), ELocation.Pipe(), ELocation.Unknown(), ELocation.SSH():
 		return false
 	default:
 		panic("unexpected location, please specify if it is folder-aware")
@@ -460,9 +465,13 @@ var EFromTo = FromTo(0)
 // represents the to location
 type FromTo uint16
 
+// TODO: Consider SSH->SSH and SSH->Azure. Some kind of synchronous copy may be required for either, unless we get clever.
+
 func (FromTo) Unknown() FromTo   { return FromTo(0) }
+func (FromTo) LocalSSH() FromTo  { return FromTo(fromToValue(ELocation.Local(), ELocation.SSH()))}
 func (FromTo) LocalBlob() FromTo { return FromTo(fromToValue(ELocation.Local(), ELocation.Blob())) }
 func (FromTo) LocalFile() FromTo { return FromTo(fromToValue(ELocation.Local(), ELocation.File())) }
+func (FromTo) SSHLocal() FromTo  { return FromTo(fromToValue(ELocation.SSH(), ELocation.Local())) }
 func (FromTo) BlobLocal() FromTo { return FromTo(fromToValue(ELocation.Blob(), ELocation.Local())) }
 func (FromTo) FileLocal() FromTo { return FromTo(fromToValue(ELocation.File(), ELocation.Local())) }
 func (FromTo) BlobPipe() FromTo  { return FromTo(fromToValue(ELocation.Blob(), ELocation.Pipe())) }
